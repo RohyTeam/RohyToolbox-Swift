@@ -10,16 +10,44 @@ import SwiftData
 
 @main
 struct toolboxApp: App {
+    init() {
+        if ProcessInfo.processInfo.arguments.contains("-UITesting") {
+            // UI tests start with a clean browser state.
+            UserDefaults.standard.removeObject(forKey: "webDownloadLastURL")
+        }
+        UserDefaults.standard.register(defaults: [
+            "downloadSegmentCount": 4,
+            "maxConcurrentDownloads": 4,
+        ])
+
+        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let url = documents.appending(path: "Downloads", directoryHint: .isDirectory)
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+    }
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Counter.self,
+            DownloadRecord.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            // The persisted store uses an older schema that SwiftData cannot
+            // migrate; discard it and start with a clean store.
+            let storeURL = URL.applicationSupportDirectory.appending(path: "default.store")
+            for suffix in ["", "-wal", "-shm"] {
+                try? FileManager.default.removeItem(
+                    at: URL(fileURLWithPath: storeURL.path + suffix)
+                )
+            }
+            do {
+                return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            } catch {
+                fatalError("Could not create ModelContainer: \(error)")
+            }
         }
     }()
 

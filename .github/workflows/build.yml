@@ -1,0 +1,124 @@
+name: Build Unsigned IPA and Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            tag_name:
+                description: 'Version'
+                required: true
+                type: string
+
+jobs:
+    build-and-release:
+        runs-on: macos-latest
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Xcode Version
+              uses: maxim-lobanov/setup-xcode@v1
+              with:
+                  xcode-version: '26.6'
+
+            - name: Generate Build Number & Build IPA
+              id: build_ipa
+              run: |
+                  BUILD_NUMBER=$(git rev-list --count HEAD)
+                  echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+
+                  TAG_NAME="${{ inputs.tag_name }}"
+                  IPA_NAME="RohyToolbox.ipa"
+                  echo "IPA_NAME=$IPA_NAME" >> $GITHUB_ENV
+
+                  if [ -d "toolbox.xcworkspace" ]; then
+                    BUILD_CMD="-workspace toolbox.xcworkspace"
+                  else
+                    BUILD_CMD="-project toolbox.xcodeproj"
+                  fi
+
+                  xcodebuild archive \
+                    $BUILD_CMD \
+                    -scheme toolbox \
+                    -configuration Release \
+                    -archivePath build/toolbox.xcarchive \
+                    CODE_SIGNING_ALLOWED=NO \
+                    CODE_SIGNING_REQUIRED=NO \
+                    CODE_SIGN_IDENTITY="" \
+                    PROVISIONING_PROFILE_SPECIFIER="" \
+                    MARKETING_VERSION="${TAG_NAME}" \
+                    CURRENT_PROJECT_VERSION="${BUILD_NUMBER}"
+                    
+                  mkdir -p build/Payload
+                  cp -R build/toolbox.xcarchive/Products/Applications/toolbox.app build/Payload/
+                  cd build
+                  zip -r "$IPA_NAME" Payload
+
+            - name: Generate Custom Changelog
+              id: changelog
+              run: |
+                  PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+                  if [ -z "$PREVIOUS_TAG" ]; then
+                    LOG_RANGE="HEAD"
+                  else
+                    LOG_RANGE="${PREVIOUS_TAG}..HEAD"
+                  fi
+
+                  format_logs() {
+                    local regex=$1
+                    git log $LOG_RANGE --no-merges --grep="$regex" -i --pretty=format:"%s|%an" | while IFS='|' read -r title author; do
+                      if [ -n "$title" ]; then
+                        if echo "$title" | grep -qE '\(#[0-9]+\)$'; then
+                          echo "- ${title} by @${author}"
+                        else
+                          echo "- ${title}"
+                        fi
+                      fi
+                    done
+                  }
+
+                  FEAT_LOGS=$(format_logs "^feat")
+                  FIX_LOGS=$(format_logs "^fix")
+                  PERF_LOGS=$(format_logs "^\(perf\|refactor\)")
+
+                  > changelog.txt
+
+                  if [ -n "$FEAT_LOGS" ]; then
+                    echo "### Feats" >> changelog.txt
+                    echo "$FEAT_LOGS" >> changelog.txt
+                    echo "" >> changelog.txt
+                  fi
+
+                  if [ -n "$FIX_LOGS" ]; then
+                    echo "### Fixes" >> changelog.txt
+                    echo "$FIX_LOGS" >> changelog.txt
+                    echo "" >> changelog.txt
+                  fi
+
+                  if [ -n "$PERF_LOGS" ]; then
+                    echo "### Perfs" >> changelog.txt
+                    echo "$PERF_LOGS" >> changelog.txt
+                    echo "" >> changelog.txt
+                  fi
+
+                  if [ ! -s changelog.txt ]; then
+                    echo "### QoLs" >> changelog.txt
+                    echo "- QoLs" >> changelog.txt
+                  fi
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: ${{ inputs.tag_name }}
+                  name: 'Rohy Toolbox ${{ inputs.tag_name }} (Build ${{ env.BUILD_NUMBER }})'
+                  body_path: changelog.txt
+                  draft: false
+                  prerelease: false
+                  files: |
+                      build/${{ env.IPA_NAME }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}

@@ -7,49 +7,56 @@
 
 import SwiftUI
 import SwiftData
+import LNPopupUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @State private var manager = DownloadManager.shared
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        TabView {
+            ToolboxView()
+                .tabItem {
+                    Label("Toolbox", systemImage: "wrench.and.screwdriver.fill")
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+            SwiftStoreView()
+                .tabItem {
+                    Label("Swift Store", systemImage: "swift")
                 }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+            DownloadsView()
+                .tabItem {
+                    Label("Downloads", systemImage: "arrow.down.circle.fill")
                 }
-            }
-        } detail: {
-            Text("Select an item")
+                .badge(manager.downloadingCount > 0 ? Text("\(manager.downloadingCount)") : nil)
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
         }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+        .task {
+            // In unit tests the manager is attached manually with an
+            // in-memory container.
+            guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
+            manager.attach(context: modelContext)
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+        .popup(
+            isBarPresented: Binding(
+                get: { manager.popupTask != nil },
+                set: { if !$0 { manager.popupTaskID = nil } }
+            ),
+            isPopupOpen: .constant(false)
+        ) {
+            if let task = manager.popupTask {
+                Text(task.fileName)
+            }
+        }
+        .popupBarCustomView(
+            wantsDefaultTapGesture: false,
+            wantsDefaultPanGesture: false,
+            wantsDefaultHighlightGesture: false
+        ) {
+            if let task = manager.popupTask {
+                DownloadPopupBar(task: task)
             }
         }
     }
@@ -57,5 +64,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Counter.self, inMemory: true)
 }

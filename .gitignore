@@ -1,0 +1,15 @@
+# Xcode
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# 测试固件（由 scripts/range_server.py 自动生成）
+scripts/test.bin
+
+# macOS
+.DS_Store

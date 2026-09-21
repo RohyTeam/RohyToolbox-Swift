@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BB93F121305D075A005380D5 /* LNPopupUI-Static in Frameworks */ = {isa = PBXBuildFile; productRef = BB93F120305D075A005380D5 /* LNPopupUI-Static */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		BB93F041305CF42E005380D5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,22 @@
 		BB93F04A305CF42E005380D5 /* toolboxUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = toolboxUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BB93F130305D075A005380D5 /* Exceptions for "toolbox" folder in "toolbox" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BB93F030305CF42E005380D5 /* toolbox */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BB93F033305CF42E005380D5 /* toolbox */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BB93F130305D075A005380D5 /* Exceptions for "toolbox" folder in "toolbox" target */,
+			);
 			path = toolbox;
 			sourceTree = "<group>";
 		};
@@ -52,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB93F121305D075A005380D5 /* LNPopupUI-Static in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +130,7 @@
 			);
 			name = toolbox;
 			packageProductDependencies = (
+				BB93F120305D075A005380D5 /* LNPopupUI-Static */,
 			);
 			productName = toolbox;
 			productReference = BB93F031305CF42E005380D5 /* toolbox.app */;
@@ -192,9 +211,13 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = BB93F028305CF42E005380D5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BB93F11F305D0759005380D5 /* XCRemoteSwiftPackageReference "LNPopupUI" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BB93F032305CF42E005380D5 /* Products */;
 			projectDirPath = "";
@@ -400,6 +423,9 @@
 				DEVELOPMENT_TEAM = P4KM7Q588X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = toolbox/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rohy Toolbox";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +458,9 @@
 				DEVELOPMENT_TEAM = P4KM7Q588X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = toolbox/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rohy Toolbox";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,6 +607,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BB93F11F305D0759005380D5 /* XCRemoteSwiftPackageReference "LNPopupUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/LeoNatan/LNPopupUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BB93F120305D075A005380D5 /* LNPopupUI-Static */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB93F11F305D0759005380D5 /* XCRemoteSwiftPackageReference "LNPopupUI" */;
+			productName = "LNPopupUI-Static";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BB93F029305CF42E005380D5 /* Project object */;
 }
