@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("swiftStoreLatestBeta") private var swiftStoreLatestBeta = false
+    @AppStorage("swiftStoreMirror") private var swiftStoreMirror = StoreMirror.official.rawValue
     @AppStorage("downloadSegmentCount") private var downloadSegmentCount = 4
     @AppStorage("maxConcurrentDownloads") private var maxConcurrentDownloads = 4
 
@@ -17,6 +18,11 @@ struct SettingsView: View {
             Form {
                 Section("Swift Store") {
                     Toggle("Latest Beta", isOn: $swiftStoreLatestBeta)
+                    Picker("Mirror", selection: $swiftStoreMirror) {
+                        ForEach(StoreMirror.allCases) { mirror in
+                            Text(mirror.displayName).tag(mirror.rawValue)
+                        }
+                    }
                 }
                 Section("Downloads") {
                     Picker("Segment Count", selection: $downloadSegmentCount) {

@@ -213,6 +213,48 @@ struct StoreCatalog: Codable {
     }
 }
 
+/// Download mirror selected in Settings; applied to downloads started from
+/// the Swift Store.
+enum StoreMirror: String, CaseIterable, Identifiable {
+    case official
+    case ghProxy
+    case ghProxyV4
+    case ghProxyV6
+    case ghProxyFastly
+    case ghProxyAxisNow
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .official: String(localized: "Official")
+        case .ghProxy: "gh-proxy"
+        case .ghProxyV4: "gh-proxy (v4)"
+        case .ghProxyV6: "gh-proxy (v6)"
+        case .ghProxyFastly: "gh-proxy (Fastly)"
+        case .ghProxyAxisNow: "gh-proxy (AxisNow)"
+        }
+    }
+
+    /// The prefix prepended to download URLs; nil for the official source.
+    var urlPrefix: String? {
+        switch self {
+        case .official: nil
+        case .ghProxy: "https://gh-proxy.com/"
+        case .ghProxyV4: "https://v4.gh-proxy.com/"
+        case .ghProxyV6: "https://v6.gh-proxy.com/"
+        case .ghProxyFastly: "https://cdn.gh-proxy.com/"
+        case .ghProxyAxisNow: "https://axisnow.gh-proxy.com/"
+        }
+    }
+
+    static var current: StoreMirror {
+        StoreMirror(
+            rawValue: UserDefaults.standard.string(forKey: "swiftStoreMirror") ?? ""
+        ) ?? .official
+    }
+}
+
 /// Fetches the Swift Store catalog and caches it on disk; cached content is
 /// shown immediately while a refresh is in flight.
 @Observable
@@ -303,6 +345,12 @@ final class SwiftStore {
             .appendingPathComponent("app/\(app.id)/official/\(encoded).json")
         let (data, _) = try await URLSession.shared.data(from: url)
         return try Self.decoder().decode(StoreVersion.self, from: data).url
+    }
+
+    /// Applies the configured mirror to a Swift Store download URL.
+    static func applyMirror(to url: URL) -> URL {
+        guard let prefix = StoreMirror.current.urlPrefix else { return url }
+        return URL(string: prefix + url.absoluteString) ?? url
     }
 
     private func loadCache() {

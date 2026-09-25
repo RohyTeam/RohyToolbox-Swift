@@ -115,7 +115,7 @@ struct DownloadCapsuleButton: View {
 
     var body: some View {
         Button {
-            DownloadManager.shared.add(url: version.url)
+            DownloadManager.shared.add(url: SwiftStore.applyMirror(to: version.url))
         } label: {
             Text("Download")
         }
@@ -137,7 +137,7 @@ struct StoreDownloadButton: View {
             Task {
                 defer { fetching = false }
                 if let url = try? await SwiftStore.shared.downloadURL(for: app) {
-                    DownloadManager.shared.add(url: url)
+                    DownloadManager.shared.add(url: SwiftStore.applyMirror(to: url))
                 }
             }
         } label: {
