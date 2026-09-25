@@ -43,7 +43,7 @@ final class AppIconCache {
             }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
                   let image = Self.downsample(data, maxPixelSize: Self.thumbnailPixelSize) else {
-                return nil	
+                return nil
             }
             try? image.pngData()?.write(to: file, options: .atomic)
             return image
@@ -116,12 +116,25 @@ struct StoreVersion: Codable, Hashable {
     }
 }
 
+/// A download source. In the apps list it only carries summary fields;
+/// full version lists arrive with the app detail.
 struct StoreSource: Codable, Identifiable, Hashable {
     var id: String
     var name: String
-    var versions: [StoreVersion]
+    var repo: URL?
+    var latestVersion: String?
+    var latestReleaseVersion: String?
+    var versions: [StoreVersion]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, repo, versions
+        case latestVersion = "latest-version"
+        case latestReleaseVersion = "latest-release-version"
+    }
 }
 
+/// An app entry in the store list (from apps.json). Version lists are
+/// fetched separately per app.
 struct StoreApp: Codable, Identifiable, Hashable {
     var id: String
     var name: String
@@ -129,18 +142,21 @@ struct StoreApp: Codable, Identifiable, Hashable {
     var authors: [String]
     var aiAssisted: Bool
     var repo: URL
-    var versions: [StoreVersion]
+    var latestVersion: String
+    var latestReleaseVersion: String
     var sources: [StoreSource]
 
     enum CodingKeys: String, CodingKey {
-        case id, name, description, authors, repo, versions, sources
+        case id, name, description, authors, repo, sources
         case aiAssisted = "ai-assisted"
+        case latestVersion = "latest-version"
+        case latestReleaseVersion = "latest-release-version"
     }
 
     init(
         id: String, name: String, description: String, authors: [String],
-        aiAssisted: Bool, repo: URL, versions: [StoreVersion],
-        sources: [StoreSource] = []
+        aiAssisted: Bool, repo: URL, latestVersion: String,
+        latestReleaseVersion: String, sources: [StoreSource] = []
     ) {
         self.id = id
         self.name = name
@@ -148,7 +164,8 @@ struct StoreApp: Codable, Identifiable, Hashable {
         self.authors = authors
         self.aiAssisted = aiAssisted
         self.repo = repo
-        self.versions = versions
+        self.latestVersion = latestVersion
+        self.latestReleaseVersion = latestReleaseVersion
         self.sources = sources
     }
 
@@ -160,27 +177,30 @@ struct StoreApp: Codable, Identifiable, Hashable {
         authors = try container.decode([String].self, forKey: .authors)
         aiAssisted = try container.decode(Bool.self, forKey: .aiAssisted)
         repo = try container.decode(URL.self, forKey: .repo)
-        versions = try container.decode([StoreVersion].self, forKey: .versions)
+        latestVersion = try container.decode(String.self, forKey: .latestVersion)
+        latestReleaseVersion = try container.decode(String.self, forKey: .latestReleaseVersion)
         sources = try container.decodeIfPresent([StoreSource].self, forKey: .sources) ?? []
     }
 
-    var latestVersion: StoreVersion? {
-        versions.max { $0.createdAt < $1.createdAt }
-    }
-
-    /// The version shown in (and downloaded from) the list. Honors the
-    /// "latest beta" setting: off (default) picks the latest stable version,
-    /// on picks the latest version including prereleases.
-    var listedVersion: StoreVersion? {
-        if UserDefaults.standard.bool(forKey: "swiftStoreLatestBeta") {
-            return latestVersion
-        }
-        return versions.filter { !$0.prerelease }.max { $0.createdAt < $1.createdAt } ?? latestVersion
+    /// The version name shown in (and downloaded from) the list. Honors the
+    /// "latest beta" setting: off (default) uses the latest stable release,
+    /// on uses the latest version including prereleases.
+    var listedVersionName: String {
+        UserDefaults.standard.bool(forKey: "swiftStoreLatestBeta")
+            ? latestVersion
+            : latestReleaseVersion
     }
 
     func iconURL(dark: Bool) -> URL? {
-        URL(string: "https://swiftstore-api.deechael.net/icons/\(id)_\(dark ? "dark" : "light").png")
+        SwiftStore.baseURL
+            .appendingPathComponent("icons/\(id)_\(dark ? "dark" : "light").png")
     }
+}
+
+/// Full app detail from /app/{id}/versions.json.
+struct StoreAppDetail: Codable, Hashable {
+    var versions: [StoreVersion]
+    var sources: [StoreSource]
 }
 
 struct StoreCatalog: Codable {
@@ -208,18 +228,18 @@ final class SwiftStore {
     private var hasLoadedOnce = false
     private var loadTask: Task<Void, Never>?
 
-    private static let defaultEndpoint = URL(string: "https://swiftstore-api.deechael.net/apps.json")!
+    private static let defaultBaseURL = URL(string: "https://swiftstore-api.deechael.net")!
 
-    /// The catalog endpoint, overridable via the `-storeEndpoint` launch
+    /// The API base URL, overridable via the `-storeEndpoint` launch
     /// argument (used by UI tests to hit a local fixture server).
-    static var endpoint: URL {
+    static var baseURL: URL {
         let arguments = ProcessInfo.processInfo.arguments
         if let index = arguments.firstIndex(of: "-storeEndpoint"),
            arguments.indices.contains(index + 1),
            let url = URL(string: arguments[index + 1]) {
-            return url
+            return url.deletingLastPathComponent()
         }
-        return defaultEndpoint
+        return defaultBaseURL
     }
 
     private init() {}
@@ -253,7 +273,7 @@ final class SwiftStore {
         loadFailed = false
         defer { isLoading = false }
         do {
-            var request = URLRequest(url: Self.endpoint)
+            var request = URLRequest(url: Self.baseURL.appendingPathComponent("apps.json"))
             request.cachePolicy = .reloadIgnoringLocalCacheData
             let (data, response) = try await URLSession.shared.data(for: request)
             guard (response as? HTTPURLResponse)?.statusCode == 200 else {
@@ -266,6 +286,23 @@ final class SwiftStore {
             lastError = String(describing: error)
             loadFailed = apps.isEmpty
         }
+    }
+
+    /// Fetches the full version list (official + all sources) for an app.
+    func detail(for app: StoreApp) async throws -> StoreAppDetail {
+        let url = Self.baseURL.appendingPathComponent("app/\(app.id)/versions.json")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try Self.decoder().decode(StoreAppDetail.self, from: data)
+    }
+
+    /// Resolves the download URL of the app's listed version.
+    func downloadURL(for app: StoreApp) async throws -> URL? {
+        let name = app.listedVersionName
+        let encoded = name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? name
+        let url = Self.baseURL
+            .appendingPathComponent("app/\(app.id)/official/\(encoded).json")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try Self.decoder().decode(StoreVersion.self, from: data).url
     }
 
     private func loadCache() {

@@ -7,6 +7,7 @@ against a real HTTP server. Serves ./test.bin (generated on first run).
 
 import http.server
 import os
+import re
 import socketserver
 import time
 
@@ -28,6 +29,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(SIZE))
         self.send_header("Accept-Ranges", "bytes")
         self.end_headers()
+
+    def _send_json(self, name):
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), name), "rb") as f:
+            body = f.read()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def _send_page(self):
         body = (
@@ -54,6 +64,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+            return
+        # /app/{id}/versions.json -> full version list fixture
+        if re.fullmatch(r"/app/[^/]+/versions\.json", self.path):
+            self._send_json("app_versions.json")
+            return
+        # /app/{id}/official/{version}.json and /app/{id}/{source}/{version}.json
+        if re.fullmatch(r"/app/[^/]+/[^/]+/[^/]+\.json", self.path):
+            self._send_json("version.json")
             return
         if self.path == "/protected.bin" and not self.headers.get("Referer"):
             # Anti-leech: no Referer -> redirect to the homepage.

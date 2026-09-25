@@ -12,16 +12,24 @@ import Testing
 @MainActor
 struct SwiftStoreLiveTests {
 
-    @Test func fetchesCatalog() async throws {
+    @Test func fetchesCatalogAndDetail() async throws {
         let store = SwiftStore.shared
         await store.refresh()
         try #require(
             !store.apps.isEmpty,
             "refresh failed: \(store.lastError ?? "unknown")"
         )
-        #expect(store.apps.contains { $0.id == "pilipod" })
-        let piliPod = store.apps.first { $0.id == "pilipod" }
-        #expect(piliPod?.sources.isEmpty == false)
-        #expect(piliPod?.sources.first?.versions.isEmpty == false)
+        let piliPod = try #require(store.apps.first { $0.id == "pilipod" })
+        // Summary carries source metadata without version lists.
+        #expect(piliPod.sources.isEmpty == false)
+
+        // Detail endpoint delivers full version lists per source.
+        let detail = try await store.detail(for: piliPod)
+        #expect(detail.versions.isEmpty == false)
+        #expect(detail.sources.first?.versions?.isEmpty == false)
+
+        // Single-version endpoint resolves a download URL.
+        let url = try await store.downloadURL(for: piliPod)
+        #expect(url != nil)
     }
 }

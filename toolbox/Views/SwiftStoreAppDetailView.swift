@@ -10,6 +10,9 @@ import SwiftUI
 struct SwiftStoreAppDetailView: View {
     let app: StoreApp
 
+    @State private var detail: StoreAppDetail?
+    @State private var loadFailed = false
+
     var body: some View {
         Form {
             Section {
@@ -26,21 +29,48 @@ struct SwiftStoreAppDetailView: View {
                         .truncationMode(.middle)
                 }
             }
-            Section("Versions") {
-                ForEach(app.versions, id: \.name) { version in
-                    StoreVersionRow(version: version)
-                }
-            }
-            ForEach(app.sources) { source in
-                Section(source.name) {
-                    ForEach(source.versions, id: \.name) { version in
+            if let detail {
+                Section("Versions") {
+                    ForEach(detail.versions, id: \.name) { version in
                         StoreVersionRow(version: version)
+                    }
+                }
+                ForEach(detail.sources) { source in
+                    Section(source.name) {
+                        ForEach(source.versions ?? [], id: \.name) { version in
+                            StoreVersionRow(version: version)
+                        }
+                    }
+                }
+            } else {
+                Section {
+                    if loadFailed {
+                        Button {
+                            load()
+                        } label: {
+                            Label("Retry", systemImage: "arrow.clockwise")
+                        }
+                    } else {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
                     }
                 }
             }
         }
         .navigationTitle(app.name)
         .navigationBarTitleDisplayMode(.inline)
+        .task { load() }
+    }
+
+    private func load() {
+        loadFailed = false
+        Task {
+            do {
+                detail = try await SwiftStore.shared.detail(for: app)
+            } catch {
+                loadFailed = true
+            }
+        }
     }
 }
 
@@ -80,14 +110,8 @@ private struct StoreVersionRow: View {
             authors: ["copurx", "DeeChael"],
             aiAssisted: true,
             repo: URL(string: "https://github.com/DeeChael/lanlu-iOS")!,
-            versions: [
-                StoreVersion(
-                    name: "v1.0.0",
-                    size: 3548580,
-                    createdAt: .now.addingTimeInterval(-90),
-                    url: URL(string: "https://example.com/lanlu.ipa")!
-                )
-            ]
+            latestVersion: "v1.0.0",
+            latestReleaseVersion: "v1.0.0"
         ))
     }
 }

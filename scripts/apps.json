@@ -8,15 +8,8 @@
       "authors": ["copurx", "DeeChael"],
       "ai-assisted": true,
       "repo": "https://github.com/DeeChael/lanlu-iOS",
-      "versions": [
-        {
-          "name": "v1.0.0",
-          "size": 3548580,
-          "created_at": "2026-09-19T04:34:47Z",
-          "url": "https://github.com/DeeChael/lanlu-iOS/releases/download/v1.0.0/lanlu-iOS.ipa",
-          "prerelease": false
-        }
-      ],
+      "latest-version": "v1.0.0",
+      "latest-release-version": "v1.0.0",
       "sources": []
     },
     {
@@ -26,28 +19,15 @@
       "authors": ["BPTPW"],
       "ai-assisted": false,
       "repo": "https://github.com/BPTPW/PiliPod",
-      "versions": [
-        {
-          "name": "0.3.6",
-          "size": 19998342,
-          "created_at": "2026-08-26T16:55:01Z",
-          "url": "https://github.com/BPTPW/PiliPod/releases/download/0.3.6/PiliPod.0.3.6%2B403.ipa",
-          "prerelease": false
-        }
-      ],
+      "latest-version": "0.3.7",
+      "latest-release-version": "0.3.7",
       "sources": [
         {
           "id": "deechael",
           "name": "DeeChael 源",
-          "versions": [
-            {
-              "name": "0.3.6-newui",
-              "size": 20999156,
-              "created_at": "2026-09-20T14:26:59Z",
-              "url": "https://github.com/DeeChael/PiliPod/releases/download/0.3.6-newui/PiliPod.0.3.6-newui%2B425.ipa",
-              "prerelease": false
-            }
-          ]
+          "repo": "https://github.com/DeeChael/PiliPod",
+          "latest-version": "0.3.6-newui",
+          "latest-release-version": "0.3.6-newui"
         }
       ]
     }

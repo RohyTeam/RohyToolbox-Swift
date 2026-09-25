@@ -58,12 +58,10 @@ private struct StoreAppRow: View {
                     Text(app.name)
                         .font(.body)
                         .lineLimit(1)
-                    if let version = app.listedVersion {
-                        Text(version.name)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
+                    Text(app.listedVersionName)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
                 Text(app.description)
                     .font(.subheadline)
@@ -73,9 +71,7 @@ private struct StoreAppRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
             .onTapGesture(perform: onSelect)
-            if let version = app.listedVersion {
-                DownloadCapsuleButton(version: version)
-            }
+            StoreDownloadButton(app: app)
         }
         .padding(.vertical, 4)
     }
@@ -113,7 +109,7 @@ struct StoreAppIcon: View {
     }
 }
 
-/// The capsule "Download" button used in the list and the detail page.
+/// The capsule "Download" button used in the detail page's version rows.
 struct DownloadCapsuleButton: View {
     let version: StoreVersion
 
@@ -126,6 +122,31 @@ struct DownloadCapsuleButton: View {
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
         .controlSize(.small)
+    }
+}
+
+/// The capsule "Download" button in the list: the version URL is resolved
+/// from the API first (apps.json carries no download URLs).
+struct StoreDownloadButton: View {
+    let app: StoreApp
+    @State private var fetching = false
+
+    var body: some View {
+        Button {
+            fetching = true
+            Task {
+                defer { fetching = false }
+                if let url = try? await SwiftStore.shared.downloadURL(for: app) {
+                    DownloadManager.shared.add(url: url)
+                }
+            }
+        } label: {
+            Text("Download")
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .controlSize(.small)
+        .disabled(fetching)
     }
 }
 
