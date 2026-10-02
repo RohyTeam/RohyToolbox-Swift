@@ -18,6 +18,16 @@ struct ToolboxView: View {
                     } label: {
                         Label("Counter", systemImage: "number")
                     }
+                    NavigationLink {
+                        ScaleConverterView()
+                    } label: {
+                        Label("Scale Converter", systemImage: "ruler")
+                    }
+                    NavigationLink {
+                        ImageRedactionGridView()
+                    } label: {
+                        Label("Image Redaction", systemImage: "eye.slash")
+                    }
                 }
             }
             .navigationTitle("Toolbox")

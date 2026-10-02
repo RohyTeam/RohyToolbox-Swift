@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -18,6 +19,7 @@
       }
     },
     "CFBundleName" : {
+      "comment" : "Bundle name",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -29,6 +31,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "若曦工具箱"
+          }
+        }
+      }
+    },
+    "NSPhotoLibraryUsageDescription" : {
+      "comment" : "Photo library access reason",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Allow access to your photo library to redact images."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "需要访问你的照片图库以进行图片打码。"
           }
         }
       }

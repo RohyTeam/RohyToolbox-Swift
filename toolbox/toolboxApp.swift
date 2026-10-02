@@ -29,6 +29,7 @@ struct toolboxApp: App {
         let schema = Schema([
             Counter.self,
             DownloadRecord.self,
+            ScaleRecord.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

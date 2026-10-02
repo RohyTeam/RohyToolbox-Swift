@@ -13,11 +13,7 @@ struct CounterDetailView: View {
 
     @State private var isEditingValue = false
     @State private var valueInput = ""
-    @State private var isEditingName = false
-    @State private var nameInput = ""
-    @State private var isEditingStep = false
-    @State private var stepInput = ""
-    @State private var showsInvalidStepAlert = false
+    @State private var stepText = ""
 
     var body: some View {
         VStack(spacing: 0) {
@@ -52,23 +48,35 @@ struct CounterDetailView: View {
 
             Form {
                 Section {
-                    Button {
-                        nameInput = counter.name
-                        isEditingName = true
-                    } label: {
-                        infoRow("Name", value: counter.name)
+                    HStack {
+                        Text("Name")
+                        TextField("", text: $counter.name)
+                            .multilineTextAlignment(.trailing)
                     }
-                    Button {
-                        stepInput = String(counter.step)
-                        isEditingStep = true
-                    } label: {
-                        infoRow("Step", value: String(counter.step))
+                    HStack {
+                        Text("Step")
+                        TextField("", text: $stepText)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    .onChange(of: stepText) { _, newValue in
+                        // Digits only, and only apply values greater than 0.
+                        let filtered = newValue.filter { "0"..."9" ~= $0 }
+                        if filtered != newValue {
+                            stepText = filtered
+                        }
+                        if let step = Int(filtered), step > 0 {
+                            counter.step = step
+                        }
                     }
                 }
             }
         }
         .navigationTitle(counter.name)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            stepText = String(counter.step)
+        }
         .alert("Edit Value", isPresented: $isEditingValue) {
             TextField("Value", text: $valueInput)
                 .keyboardType(.numbersAndPunctuation)
@@ -81,53 +89,6 @@ struct CounterDetailView: View {
         } message: {
             Text("Enter a new value.")
         }
-        .alert("Edit Name", isPresented: $isEditingName) {
-            TextField("Name", text: $nameInput)
-            Button("OK") {
-                let trimmed = nameInput.trimmingCharacters(in: .whitespacesAndNewlines)
-                if !trimmed.isEmpty {
-                    counter.name = trimmed
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Enter a new name.")
-        }
-        .alert("Edit Step", isPresented: $isEditingStep) {
-            TextField("Step", text: $stepInput)
-                .keyboardType(.numberPad)
-                .onChange(of: stepInput) { _, newValue in
-                    let filtered = newValue.filter { "0"..."9" ~= $0 }
-                    if filtered != newValue {
-                        stepInput = filtered
-                    }
-                }
-            Button("OK") {
-                if let newStep = Int(stepInput.trimmingCharacters(in: .whitespaces)), newStep > 0 {
-                    counter.step = newStep
-                } else {
-                    showsInvalidStepAlert = true
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Enter an integer greater than 0.")
-        }
-        .alert("Invalid Step", isPresented: $showsInvalidStepAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("The step must be an integer greater than 0.")
-        }
-    }
-
-    private func infoRow(_ title: LocalizedStringKey, value: String) -> some View {
-        HStack {
-            Text(title)
-            Spacer()
-            Text(value)
-                .foregroundStyle(.secondary)
-        }
-        .foregroundStyle(.primary)
     }
 }
 

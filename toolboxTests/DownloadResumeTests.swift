@@ -65,9 +65,10 @@ struct DownloadResumeTests {
         manager.delete(task, removeFile: true)
     }
 
-    /// Real-world case: GitHub release URLs redirect to S3-presigned URLs,
-    /// which reject HEAD — the probe must still detect range support.
-    @Test func gitHubReleaseDownloadIsSegmented() async throws {
+    /// The fixture server rejects HEAD like S3-presigned URLs (e.g. GitHub
+    /// release assets) do; the probe must still detect range support via a
+    /// ranged GET.
+    @Test func rangeProbeWorksWhenHeadRejected() async throws {
         let container = try ModelContainer(
             for: DownloadRecord.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
@@ -75,9 +76,7 @@ struct DownloadResumeTests {
         let manager = DownloadManager()
         manager.attach(context: container.mainContext)
 
-        manager.add(url: URL(
-            string: "https://github.com/DeeChael/lanlu-iOS/releases/download/v1.0.0/lanlu-iOS.ipa"
-        )!)
+        manager.add(url: URL(string: "http://127.0.0.1:18743/test.bin")!)
         let task = try #require(manager.tasks.first)
 
         try await waitUntil("probe", task: task) { task.isSegmented || task.state == .failed }

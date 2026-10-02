@@ -4,5 +4,7 @@
 <dict>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow access to your photo library to redact images.</string>
 </dict>
 </plist>

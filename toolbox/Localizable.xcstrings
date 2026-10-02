@@ -1,6 +1,27 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "": {},
+    "%@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ %@ · %lld px": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ %2$@ · %3$lld px"
+          }
+        }
+      }
+    },
     "%@ / %@": {
       "localizations": {
         "en": {
@@ -11,6 +32,7 @@
         }
       }
     },
+    "%@ DPI": {},
     "%@ | %@": {
       "localizations": {
         "en": {
@@ -52,12 +74,43 @@
         }
       }
     },
+    "%lld:%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld:%2$lld"
+          }
+        }
+      }
+    },
+    ":": {},
     "AI-Assisted": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "AI 辅助"
+          }
+        }
+      }
+    },
+    "Actual": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实际"
+          }
+        }
+      }
+    },
+    "Actual (%@)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实际（%@）"
           }
         }
       }
@@ -92,6 +145,26 @@
         }
       }
     },
+    "Add Record": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加记录"
+          }
+        }
+      }
+    },
+    "All": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部"
+          }
+        }
+      }
+    },
     "Authors": {
       "localizations": {
         "zh-Hans": {
@@ -102,12 +175,52 @@
         }
       }
     },
+    "Auto Redact": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动打码"
+          }
+        }
+      }
+    },
     "Back": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "后退"
+          }
+        }
+      }
+    },
+    "Block": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色块"
+          }
+        }
+      }
+    },
+    "Block Color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色块颜色"
+          }
+        }
+      }
+    },
+    "Blur": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模糊"
           }
         }
       }
@@ -138,6 +251,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "请检查网络后下拉重试。"
+          }
+        }
+      }
+    },
+    "Clear All": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除所有打码"
+          }
+        }
+      }
+    },
+    "Clear all redactions?": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是否清除所有打码？"
           }
         }
       }
@@ -182,6 +315,7 @@
         }
       }
     },
+    "DPI": {},
     "Day before yesterday": {
       "localizations": {
         "zh-Hans": {
@@ -232,6 +366,16 @@
         }
       }
     },
+    "Done": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
+          }
+        }
+      }
+    },
     "Download": {
       "localizations": {
         "zh-Hans": {
@@ -262,22 +406,22 @@
         }
       }
     },
-    "Edit Name": {
+    "Drawing": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "修改名称"
+            "value": "图纸"
           }
         }
       }
     },
-    "Edit Step": {
+    "Drawing (%@)": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "修改步长"
+            "value": "图纸（%@）"
           }
         }
       }
@@ -312,16 +456,6 @@
         }
       }
     },
-    "Enter a new name.": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "输入新的名称。"
-          }
-        }
-      }
-    },
     "Enter a new value.": {
       "localizations": {
         "zh-Hans": {
@@ -332,12 +466,12 @@
         }
       }
     },
-    "Enter an integer greater than 0.": {
+    "Export": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "请输入大于 0 的整数。"
+            "value": "导出"
           }
         }
       }
@@ -392,12 +526,52 @@
         }
       }
     },
+    "Format": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "格式"
+          }
+        }
+      }
+    },
     "Forward": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "前进"
+          }
+        }
+      }
+    },
+    "Full Photo Access Needed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要图库完全访问权限"
+          }
+        }
+      }
+    },
+    "Full photo library access is required to redact images.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图片打码需要获取照片图库的完全访问权限。"
+          }
+        }
+      }
+    },
+    "Grant Access": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "授权访问"
           }
         }
       }
@@ -433,12 +607,12 @@
       }
     },
     "ID": {},
-    "Invalid Step": {
+    "Image Redaction": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无效的步长"
+            "value": "图片打码"
           }
         }
       }
@@ -483,12 +657,32 @@
         }
       }
     },
+    "Millimeter Units": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "毫米单位"
+          }
+        }
+      }
+    },
     "Mirror": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "镜像源"
+          }
+        }
+      }
+    },
+    "Mosaic": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "马赛克"
           }
         }
       }
@@ -553,6 +747,16 @@
         }
       }
     },
+    "Original (%@)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原格式（%@）"
+          }
+        }
+      }
+    },
     "Pause": {
       "localizations": {
         "zh-Hans": {
@@ -579,6 +783,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "已暂停"
+          }
+        }
+      }
+    },
+    "Pixels": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "像素"
+          }
+        }
+      }
+    },
+    "Ratio": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "比例"
+          }
+        }
+      }
+    },
+    "Records": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "记录"
+          }
+        }
+      }
+    },
+    "Redaction Mode": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打码方式"
+          }
+        }
+      }
+    },
+    "Redo": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重做"
           }
         }
       }
@@ -623,6 +877,46 @@
         }
       }
     },
+    "Save": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存"
+          }
+        }
+      }
+    },
+    "Save Copy": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存副本"
+          }
+        }
+      }
+    },
+    "Save to Files": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存到文件"
+          }
+        }
+      }
+    },
+    "Scale Converter": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "比例换算"
+          }
+        }
+      }
+    },
     "Segment #%lld": {
       "localizations": {
         "zh-Hans": {
@@ -653,12 +947,42 @@
         }
       }
     },
+    "Select Words": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择词组"
+          }
+        }
+      }
+    },
     "Settings": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "设置"
+          }
+        }
+      }
+    },
+    "Share": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享"
+          }
+        }
+      }
+    },
+    "Share & Delete": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享并删除"
           }
         }
       }
@@ -704,16 +1028,6 @@
         }
       }
     },
-    "The step must be an integer greater than 0.": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "步长必须是大于 0 的整数。"
-          }
-        }
-      }
-    },
     "Toolbox": {
       "localizations": {
         "zh-Hans": {
@@ -735,6 +1049,16 @@
       }
     },
     "URL": {},
+    "Undo": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撤销"
+          }
+        }
+      }
+    },
     "Value": {
       "localizations": {
         "zh-Hans": {
@@ -765,6 +1089,16 @@
         }
       }
     },
+    "Watermark": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "水印"
+          }
+        }
+      }
+    },
     "Yes": {
       "localizations": {
         "zh-Hans": {
@@ -786,6 +1120,9 @@
       }
     },
     "beta": {},
+    "dpi": {},
+    "px": {},
+    "redaction-box": {},
     "—": {}
   },
   "version": "1.0"

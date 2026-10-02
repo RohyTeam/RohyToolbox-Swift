@@ -25,9 +25,8 @@ SIZE = os.path.getsize(FILE)
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_HEAD(self):
-        self.send_response(200)
-        self.send_header("Content-Length", str(SIZE))
-        self.send_header("Accept-Ranges", "bytes")
+        # Mimic S3 presigned URLs: HEAD is rejected, ranged GET works.
+        self.send_response(403)
         self.end_headers()
 
     def _send_json(self, name):
